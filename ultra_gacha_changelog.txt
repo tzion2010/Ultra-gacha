@@ -1,0 +1,50 @@
+Ultra Gacha — Full Changelog (v1 → v7)
+
+v1 — Prototype
+- Basic gacha simulator (pull button + random results).
+- Minimal UI (non-mobile friendly).
+- No database or editing tools.
+
+v2 — Improved UI + Functionality
+- Larger UI and font scaling.
+- Added editable rarities and banners.
+- Implemented sample database and pre-seeded pulls.
+- Working shop packs and banner info.
+- Added CSV export for inventory.
+
+v3 — Mobile Layout Update
+- Fully mobile-optimized (stacked layout).
+- Fixed broken buttons and scroll issues.
+- Larger touch targets and UI scaling slider.
+- Improved event wiring for consistent button behavior.
+
+v4 — Codex Edition
+- Database replaced with “Codex” (search/filter/sort).
+- Added world origin, flavor text (description), and full image view modal.
+- Scrollable details panel with D&D-style stats.
+- Auto-generated flavor text when empty.
+
+v5 — Progression Edition
+- Renamed “Inventory” to “Character Manager.”
+- Added leveling system (Lv 1–100, EXP, expNeeded = level × 50 + 200).
+- Ascension system (requires 3 duplicates, promotes rarity, boosts stats).
+- Scrollable popups and panels for mobile.
+- Compacted UI for smaller screens.
+
+v6 — Inline Edit + Tag Chips Edition
+- Removed separate “Editor” tab.
+- Added ✎ Edit button on each card → opens edit popup.
+- Added “Add Character” button.
+- All fields editable (stats, rarity, image, world, description, tags).
+- Tags implemented as chips with live suggestions from existing tags/worlds.
+- Search and filter now use tag keywords (no separate world filter).
+
+v7 — Layouts, Themes, and Dual Images
+- Dual image input (local upload or URL).
+- Shop themed packs by tags (+20% rarity boost for matching tags).
+- Subtle gradient rarity colors (visual polish).
+- Clickable images in gacha pulls (open full character modal).
+- Codex & Character Manager layout switcher (Grid/List/Compact modes).
+- Persistent UI scale, layout, and tag filters in localStorage.
+- Optimized mobile performance and scroll behavior.
+
