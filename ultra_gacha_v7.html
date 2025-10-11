@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ultra Gacha v7 — Layouts, Themes, Dual Images</title>
+<style>
+:root{
+  --bg:#0a0d16; --panel:#141a33; --panel-2:#1b2144; --accent:#7fb7ff; --text:#eef2ff; --muted:#9eabc8;
+  --chip:#1b234d; --chip2:#212a5e; --shadow:0 10px 28px rgba(0,0,0,.42); --radius:12px; --font:14px; --scale:1;
+}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);
+  font-size:calc(var(--font)*var(--scale));
+  background:radial-gradient(1100px 700px at 10% -10%, #2d3769 0, transparent 55%), radial-gradient(900px 700px at 110% 0%, #3a256a 0, transparent 60%), var(--bg);
+}
+header{display:flex;gap:8px;align-items:center;padding:10px 12px;background:rgba(0,0,0,.25);position:sticky;top:0;z-index:50;backdrop-filter:blur(7px);border-bottom:1px solid #2b345c}
+header h1{margin:0;font-size:.95rem;letter-spacing:.3px}
+#currency{margin-left:auto;display:flex;gap:6px;align-items:center;overflow:auto;-webkit-overflow-scrolling:touch}
+.pill{display:inline-flex;gap:6px;align-items:center;padding:6px 8px;border-radius:999px;background:var(--chip);border:1px solid #3a4472;font-weight:700;white-space:nowrap}
+.pill input{width:70px;background:transparent;border:none;color:var(--text);font-weight:700;font-size:.95rem}
+.btn,button{background:linear-gradient(180deg,#273362,#18224b);border:1px solid #3d4f97;color:var(--text);padding:8px 12px;border-radius:10px;font-weight:800;cursor:pointer;min-height:36px;min-width:36px;touch-action:manipulation;font-size:.95rem}
+button:active{transform:translateY(1px)}button:disabled{opacity:.6;cursor:not-allowed}
+input,select,textarea{background:#0f152b;border:1px solid #2c355e;color:var(--text);padding:8px 10px;border-radius:10px;width:100%;font-size:.95rem;min-height:36px}
+textarea{min-height:72px}label{display:block;font-size:.9rem;margin-bottom:4px}.small{font-size:.85rem;color:var(--muted)}
+.container{max-width:1200px;margin:10px auto;padding:0 8px 120px}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;position:sticky;top:48px;z-index:40}
+.tab-btn{padding:8px 10px;border-radius:10px;background:var(--chip);border:1px solid #2f3965;cursor:pointer;font-weight:800}
+.tab-btn.active{outline:2px solid var(--accent);background:var(--chip2)}
+.grid{display:grid;gap:10px}.two{grid-template-columns:1.2fr .8fr}
+.panel{background:linear-gradient(180deg,#151a32,#101427);border:1px solid #2b335b;border-radius:var(--radius);padding:10px;box-shadow:var(--shadow);max-height:70vh;overflow:auto}
+.panel h2{margin:2px 0 8px;font-size:.95rem}.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+.divider{height:1px;background:#2a2f55;margin:8px 0}.muted{color:var(--muted)}.right{margin-left:auto}
+
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.card{background:linear-gradient(180deg,#1a2247,#0f1430);border:1px solid #2e3766;border-radius:12px;overflow:hidden;position:relative;transition:transform .08s ease}
+.card:active{transform:translateY(1px)}
+.card .art{aspect-ratio:4/5;background:#0e1126;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}
+.card .art img{width:100%;height:100%;object-fit:cover}
+.badge{position:absolute;top:6px;left:6px;padding:6px 8px;border-radius:8px;font-weight:800;font-size:.75rem;background:#111736;border:1px solid #3a4a92}
+.edit-btn{position:absolute;bottom:6px;right:6px;padding:6px 8px;font-size:.8rem;border-radius:8px;background:#1f2a5c;border:1px solid #4152a0;color:#fff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.stat{background:#0e1331;border:1px solid #2b3565;border-radius:8px;padding:6px 8px;font-weight:800;text-align:center;font-size:.85rem}
+.bar{height:6px;background:#0b1030;border:1px solid #26306a;border-radius:999px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#3e66ff,#8ec1ff)}
+
+/* Details modal */
+#imageModal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:10px;z-index:200}
+#imageModal.show{display:flex}#imageModal .wrap{width:min(920px,96vw);max-height:92vh;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#imageModal img{width:100%;height:auto;max-height:92vh;border-radius:10px;object-fit:contain}
+#imageModal .details{background:#0f1533;border:1px solid #2b3565;border-radius:10px;padding:10px;overflow:auto}
+#imageModal .close{position:absolute;top:10px;right:10px}#imageModal .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+/* Edit modal */
+#editModal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:10px;z-index:210}
+#editModal.show{display:flex}#editModal .wrap{width:min(900px,96vw);max-height:85vh;background:#0f1533;border:1px solid #2b3565;border-radius:12px;padding:10px;overflow:auto;box-shadow:var(--shadow)}
+#editModal h3{margin:0 0 8px 0;font-size:1rem}.kv{display:grid;grid-template-columns:120px 1fr;gap:6px;align-items:center}
+.chipbox{display:flex;flex-wrap:wrap;gap:6px;padding:6px;background:#0f1636;border:1px solid #2a3566;border-radius:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 8px;border-radius:999px;background:#1e2a54;border:1px solid #3b4a8a;font-weight:800;font-size:.85rem;cursor:pointer}
+.chip.suggestion{opacity:.95}.chip input{background:transparent;border:none;color:var(--text);outline:none;width:120px;min-width:80px}
+.chips-suggest{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.imgPreview{width:100%;max-height:40vh;object-fit:contain;border-radius:10px;border:1px solid #2a3566;background:#0c1230}
+
+/* List / Compact modes */
+.view-list .inv-grid{display:block}
+.view-list .card{display:grid;grid-template-columns:92px 1fr;gap:10px;min-height:110px}
+.view-list .card .art{aspect-ratio:auto;height:100px}
+.view-list .stats{grid-template-columns:repeat(6,1fr)}
+.view-compact .inv-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.view-compact .card{border-radius:10px}
+.view-compact .stats{display:none}
+.view-compact .badge{font-size:.7rem;padding:4px 6px}
+.view-compact .edit-btn{padding:4px 6px;font-size:.75rem}
+
+@media(max-width:900px){
+  .two{grid-template-columns:1fr}.container{padding:0 8px 120px}
+  .inv-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  header{flex-wrap:wrap}#currency{width:100%}
+  #imageModal .wrap{grid-template-columns:1fr;width:96vw}#imageModal img{max-height:45vh}
+  .kv{grid-template-columns:1fr 1fr}
+}
+.toast{position:fixed;bottom:12px;right:12px;background:#111735;border:1px solid #344595;padding:10px 12px;border-radius:10px;box-shadow:var(--shadow);z-index:240}
+.hidden{display:none!important}
+
+/* Subtle rarity gradients */
+.badge[data-r="t1_common"]{background:linear-gradient(180deg,#a7adba,#7b808f)}
+.badge[data-r="t2_uncommon"]{background:linear-gradient(180deg,#7ecb92,#4d9e67)}
+.badge[data-r="t3_rare"]{background:linear-gradient(180deg,#5fb6ff,#3a7bd5)}
+.badge[data-r="t4_epic"]{background:linear-gradient(180deg,#a58dff,#6d66d2)}
+.badge[data-r="t5_legendary"]{background:linear-gradient(180deg,#ffb25b,#d68a3e)}
+.badge[data-r="t6_mythic"]{background:linear-gradient(180deg,#ffd86a,#d6a84e)}
+.badge[data-r="t7_supreme"]{background:linear-gradient(180deg,#6affc8,#3fbd98)}
+.badge[data-r="t8_arcane"]{background:linear-gradient(180deg,#6ad5ff,#3a95d6)}
+.badge[data-r="t9_celestial"]{background:linear-gradient(180deg,#ff9ef7,#c36fd0)}
+.badge[data-r="t10_ultimate"]{background:linear-gradient(180deg,#ffc86a,#d6a84e)}
+.badge[data-r="tx_godlike"]{background:linear-gradient(180deg,#b9fff6,#84d6cb)}
+.badge[data-r="ty_multiversal"]{background:linear-gradient(180deg,#fff59e,#cfc56d)}
+.badge[data-r="tz_omnipotent"]{background:linear-gradient(180deg,#ffffff,#b9b9b9)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Ultra Gacha v7</h1>
+  <div class="right">
+    <label class="small">UI <input id="uiScale" type="range" min="0.85" max="1.2" step="0.02" value="1" style="width:120px"></label>
+  </div>
+  <div id="currency">
+    <div class="pill">💎 <input id="gemsInput" type="number" min="0"><button id="gemsApply">Set</button></div>
+    <div class="pill">🪙 <input id="goldInput" type="number" min="0"><button id="goldApply">Set</button></div>
+    <button id="dailyBtn" title="Claim daily rewards">Daily</button>
+  </div>
+</header>
+
+<div class="container">
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="gacha">Gacha</button>
+    <button class="tab-btn" data-tab="characters">Character Manager</button>
+    <button class="tab-btn" data-tab="shop">Shop</button>
+    <button class="tab-btn" data-tab="tuning">Tuning</button>
+    <button class="tab-btn" data-tab="codex">Codex</button>
+    <span class="tab-btn" style="pointer-events:none; opacity:.7">v7.0</span>
+  </nav>
+
+  <!-- Gacha -->
+  <section id="gacha" class="grid two">
+    <div class="panel">
+      <h2>Summon</h2>
+      <div class="toolbar">
+        <label>Banner <select id="bannerSelect"></select></label>
+        <label>Pulls <select id="pullCount"><option>1</option><option>10</option><option>50</option></select></label>
+        <button id="pullBtn">Pull</button>
+        <span class="small">Tap results to open details.</span>
+      </div>
+      <div class="divider"></div>
+      <div id="pullResults" class="inv-grid" style="margin-top:6px"></div>
+    </div>
+    <div class="panel">
+      <h2>Banner Info</h2>
+      <div id="bannerInfo"></div>
+      <div class="divider"></div>
+      <h3 style="margin:4px 0">Drop Rates</h3>
+      <div id="rates"></div>
+    </div>
+  </section>
+
+  <!-- Character Manager -->
+  <section id="characters" class="hidden">
+    <div class="panel">
+      <div class="toolbar">
+        <h2 style="margin-right:auto">Character Manager</h2>
+        <div class="row" style="flex:1">
+          <button id="addCharacter">+ Add Character</button>
+          <input id="search" placeholder="Search by name"/>
+          <select id="rarityFilter"></select>
+          <input id="tagsFilter" placeholder="Filter by tags (includes world)"/>
+          <select id="charSort"><option value="rarity">Sort: Rarity</option><option value="name">Sort: Name</option><option value="world">Sort: World</option><option value="newest">Sort: Newest</option></select>
+        </div>
+        <div class="row" style="flex:0 0 auto;gap:4px;justify-content:flex-end">
+          <button id="layoutGrid" title="Grid view">🧱</button>
+          <button id="layoutList" title="List view">📄</button>
+          <button id="layoutCompact" title="Compact view">⚙️</button>
+          <button id="clearFilter" title="Clear filters">Clear</button>
+          <button id="exportInv" class="right">Export CSV</button>
+        </div>
+      </div>
+      <div id="inventoryGrid" class="inv-grid" style="margin-top:6px"></div>
+    </div>
+  </section>
+
+  <!-- Shop -->
+  <section id="shop" class="hidden">
+    <div class="grid" style="grid-template-columns: 1fr 1fr">
+      <div class="panel"><h2>Standard Packs</h2><div id="shopPacks"></div></div>
+      <div class="panel"><h2>Themed Packs (by Tags)</h2><div id="shopThemed"></div></div>
+    </div>
+  </section>
+
+  <!-- Tuning -->
+  <section id="tuning" class="hidden">
+    <div class="grid" style="grid-template-columns: 1fr 1fr">
+      <div class="panel"><h2>Rarities</h2><div id="rarityEditor"></div><div class="toolbar"><button id="addRarity">Add Rarity</button><button id="saveRarities">Save Rarities</button></div></div>
+      <div class="panel"><h2>Banners & Packs</h2><div id="bannerEditor"></div><div class="divider"></div><div id="packEditor"></div><div class="toolbar"><button id="saveBanners">Save Banners</button><button id="savePacks">Save Packs</button></div></div>
+    </div>
+    <div class="panel"><h2>Simulate Pulls / Sample Data</h2>
+      <div class="row"><div><label>Banner<select id="simBanner"></select></label></div><div><label>Count<input id="simCount" type="number" min="1" max="500" value="30"></label></div>
+      <div class="toolbar"><button id="simRun">Simulate</button><button id="seedSample">Seed Sample DB</button></div></div>
+      <div class="small">Populate your save with realistic pulls.</div>
+    </div>
+  </section>
+
+  <!-- Codex -->
+  <section id="codex" class="hidden">
+    <div class="grid two">
+      <div class="panel">
+        <div class="toolbar">
+          <h2 style="margin-right:auto">World Codex</h2>
+          <div class="row" style="flex:1">
+            <input id="codexSearch" placeholder="Search by name">
+            <select id="codexFilterRarity"></select>
+            <input id="codexFilterTags" placeholder="Filter by tags (includes world)">
+            <select id="codexSort"><option value="rarity">Sort: Rarity</option><option value="name">Sort: Name</option><option value="world">Sort: World</option><option value="newest">Sort: Newest</option></select>
+          </div>
+          <div class="row" style="flex:0 0 auto;gap:4px;justify-content:flex-end">
+            <button id="codexGridBtn" title="Grid view">🧱</button>
+            <button id="codexListBtn" title="List view">📄</button>
+            <button id="codexCompactBtn" title="Compact view">⚙️</button>
+            <button id="codexClear">Clear</button>
+          </div>
+        </div>
+        <div id="codexGrid" class="inv-grid" style="margin-top:6px"></div>
+      </div>
+      <div class="panel"><h2>Codex Stats</h2><div id="codexStats"></div></div>
+    </div>
+  </section>
+</div>
+
+<!-- Details Modal -->
+<div id="imageModal">
+  <div class="wrap">
+    <button class="close" onclick="closeImageModal()">Close ✕</button>
+    <img id="modalImg" alt="">
+    <div class="details">
+      <div id="modalTitle" style="font-weight:900;font-size:1rem;margin-bottom:4px"></div>
+      <div id="modalRarity" class="small"></div>
+      <div class="divider"></div>
+      <div class="kv">
+        <div>World</div><div id="modalWorld"></div>
+        <div>Acquired</div><div id="modalAcquired"></div>
+        <div>Level</div><div id="modalLevel"></div>
+        <div>Ascension</div><div id="modalAscension"></div>
+      </div>
+      <div class="bar" title="EXP"><i id="modalExpFill" style="width:0%"></i></div>
+      <div class="small" id="modalExpText"></div>
+      <div class="divider"></div>
+      <div style="font-weight:800;margin-bottom:4px">Stats</div>
+      <div id="modalStats" class="stats"></div>
+      <div class="divider"></div>
+      <div style="font-weight:800;margin-bottom:4px">Tags</div>
+      <div id="modalTags" class="chipbox"></div>
+      <div class="divider"></div>
+      <div style="font-weight:800;margin-bottom:4px">Description</div>
+      <div id="modalDesc" class="small"></div>
+      <div class="divider"></div>
+      <div class="btns">
+        <button id="modalGainExp">Gain EXP</button>
+        <button id="modalAscend">Ascend</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal">
+  <div class="wrap">
+    <h3 id="editTitle">Edit Character</h3>
+    <div class="row">
+      <div><label>Name<input id="ed_name" maxlength="50"></label></div>
+      <div><label>Rarity<select id="ed_rarity"></select></label></div>
+    </div>
+    <div class="row">
+      <div><label>World<input id="ed_world" maxlength="60" placeholder="e.g., Skyrim"></label></div>
+      <div>
+        <label>Image (File)<input id="ed_img" type="file" accept="image/*"></label>
+        <label>Image URL<input id="ed_img_url" placeholder="https://…"></label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="row" style="flex:2">
+        <div><label>STR<input id="ed_STR" type="number" min="1" max="30"></label></div>
+        <div><label>DEX<input id="ed_DEX" type="number" min="1" max="30"></label></div>
+        <div><label>CON<input id="ed_CON" type="number" min="1" max="30"></label></div>
+        <div><label>INT<input id="ed_INT" type="number" min="1" max="30"></label></div>
+        <div><label>WIS<input id="ed_WIS" type="number" min="1" max="30"></label></div>
+        <div><label>CHA<input id="ed_CHA" type="number" min="1" max="30"></label></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div><label>Description<textarea id="ed_desc" placeholder="Flavor text..."></textarea></label></div>
+    <div class="divider"></div>
+    <div><label>Tags</label>
+      <div id="tagBox" class="chipbox"></div>
+      <div id="tagSuggest" class="chips-suggest"></div>
+    </div>
+    <div class="divider"></div>
+    <img id="ed_preview" class="imgPreview hidden" alt="preview">
+    <div class="divider"></div>
+    <div class="toolbar">
+      <button id="ed_save">Save</button>
+      <button id="ed_cancel">Cancel</button>
+      <button id="ed_delete" class="right">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const uid=()=>crypto.randomUUID?crypto.randomUUID():(Date.now().toString(36)+Math.random().toString(36).slice(2,8));
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+const now=()=>new Date().toISOString();
+function toast(m,ms=1800){const t=$('#toast');t.textContent=m;t.classList.remove('hidden');clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.add('hidden'),ms);}
+function download(fn,txt){const el=document.createElement('a');el.href='data:application/json;charset=utf-8,'+encodeURIComponent(txt);el.download=fn;document.body.appendChild(el);el.click();el.remove();}
+async function fileToDataURL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);});}
+function savePref(k,v){const P=JSON.parse(localStorage.getItem('ug7_prefs')||'{}');P[k]=v;localStorage.setItem('ug7_prefs',JSON.stringify(P));}
+function loadPref(k,def){const P=JSON.parse(localStorage.getItem('ug7_prefs')||'{}');return(P[k]!==undefined)?P[k]:def;}
+
+const DEFAULT_RARITIES=[
+  {key:'t1_common',grade:'F',name:'Common',desc:'Has no notable skills or powers.',color:'#a7adba',weight:.40},
+  {key:'t2_uncommon',grade:'E',name:'Uncommon',desc:'Possesses a useful, real-world skill.',color:'#7ecb92',weight:.22},
+  {key:'t3_rare',grade:'D',name:'Rare',desc:'Peak human or exceptional potential.',color:'#5fb6ff',weight:.12},
+  {key:'t4_epic',grade:'C',name:'Epic',desc:'Minor supernatural traits.',color:'#a58dff',weight:.08},
+  {key:'t5_legendary',grade:'B',name:'Legendary',desc:'Defined, versatile superpower.',color:'#ffb25b',weight:.06},
+  {key:'t6_mythic',grade:'A',name:'Mythic',desc:'City-block level power.',color:'#ffd86a',weight:.035},
+  {key:'t7_supreme',grade:'S',name:'Supreme',desc:'City/nation-scale influence.',color:'#6affc8',weight:.02},
+  {key:'t8_arcane',grade:'SS',name:'Arcane',desc:'Reality-bending esoterica.',color:'#6ad5ff',weight:.012},
+  {key:'t9_celestial',grade:'SSS',name:'Celestial',desc:'Astronomical scale.',color:'#ff9ef7',weight:.008},
+  {key:'t10_ultimate',grade:'U',name:'Ultimate',desc:'Star-destroying, system-warping.',color:'#ffc86a',weight:.004},
+  {key:'tx_godlike',grade:'X',name:'Godlike',desc:'Breaks rules of its own universe.',color:'#b9fff6',weight:.0025},
+  {key:'ty_multiversal',grade:'Y',name:'Multiversal',desc:'Exists across multiple realities.',color:'#fff59e',weight:.0014},
+  {key:'tz_omnipotent',grade:'Z',name:'Omnipotent',desc:'Absolute authority.',color:'#ffffff',weight:.0008}
+];
+const DB_KEY='ultra_gacha_v7';
+
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function rollStat(base){return clamp(Math.round(base+(Math.random()*8-4)),1,30);}
+function svgPlaceholder(name,color){const inits=name.split(/\s+/).map(s=>s[0]).join('').slice(0,3).toUpperCase();const bg=color||'#2a3150';const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1000'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='${bg}'/><stop offset='100%' stop-color='#0b0f1f'/></linearGradient></defs><rect width='100%' height='100%' fill='url(#g)'/><g fill='#fff' font-family='Inter,Segoe UI,Arial' text-anchor='middle'><text x='400' y='520' font-size='200' font-weight='800' opacity='.95'>${inits}</text><text x='400' y='880' font-size='44' opacity='.85'>${name}</text></g></svg>`;return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));}
+function makeChar(name,rarityKey,rarities,world,desc,tags){const rar=rarities.find(r=>r.key===rarityKey)||rarities[0];const idx=rarities.indexOf(rar);const base=8+idx;const stats=['STR','DEX','CON','INT','WIS','CHA'].reduce((o,k)=>{o[k]=rollStat(base+rand(0,10));return o;},{});return{id:uid(),name,rarity:rarityKey,img:svgPlaceholder(name,rar.color),stats,world,description:desc,tags:Array.isArray(tags)?tags:[],createdAt:now()};}
+function defaultCharacters(r){const n=[['Rooftop Courier','t2_uncommon','Night City','A runner who maps skylines by foot.',['runner','urban']],['Back-Alley Chemist','t2_uncommon','Ravnica','Bottles storms in reusable vials.',['alchemy','rogue']],['Gilded Duelist','t3_rare','Eldoria','Never draws first; never needs to.',['swordsman']],['Storm Archivist','t4_epic','Eberron','Thunder answers when she opens books.',['mage','storm']],['Quartz Vanguard','t3_rare','Shattered Spire','Armor grown from singing crystal.',['tank','crystal']],['Abyss Whisperer','t4_epic','Skyrim','A scholar who listens to what the void whispers back.',['Skyrim','void','mage']],['Solar Bastion','t5_legendary','Sol Prime','Walks with a dawn at his heels.',['paladin','sun']],['Myriad Weaver','t6_mythic','Eberron','Threads of infinite timelines at her fingertips.',['time','weaver']],['Citybreaker Titan','t7_supreme','Atlas Gate','A siege given legs.',['giant','siege']],['Arc-Lattice Magus','t8_arcane','Ivory Array','Reality tessellates around his staff.',['arcane','geomancy']],['Moonfall Seraph','t9_celestial','Lunaris','Her wings shed tides.',['angel','moon']],['Singularity Reaper','t10_ultimate','Elysium-9','Harvests stars to feed the dark.',['reaper','space']],['Pantheon Architect','tx_godlike','Elysium-9','Designs gods as easily as others sketch stars.',['godlike','creator']],['Continuum Walker','ty_multiversal','Crossroads','Leaves footprints between realities.',['multiversal','traveler']],['Prime Narrator','tz_omnipotent','Meta','Writes the worlds as they are read.',['meta','omniscient']],['Iron Sentinel','t1_common','Borestone','Keeps the gate; never sleeps.',['guard']],['Field Ranger','t1_common','Borestone','Knows every path by taste of wind.',['ranger']]];return n.map(([a,b,c,d,e])=>makeChar(a,b,DEFAULT_RARITIES,c,d,e));}
+
+function addToInventory(DB,base){const inst={id:uid(),baseId:base.id,name:base.name,rarity:base.rarity,img:base.img,level:1,exp:0,ascension:0,stats:{...base.stats},world:base.world||'Unknown',description:base.description||'A mysterious figure.',tags:Array.isArray(base.tags)?base.tags.slice():[],acquiredAt:now()};DB.inventory.unshift(inst);DB.history.unshift({ts:now(),type:'pull',char:{name:inst.name,rarity:inst.rarity}});return inst;}
+function normalize(w){const t=w.reduce((a,b)=>a+b,0)||1;return w.map(x=>x/t);}function weightedPick(w){const n=Math.random();let c=0;for(let i=0;i<w.length;i++){c+=w[i];if(n<c)return i;}return w.length-1;}
+function pickRarity(DB,b){const w=normalize(b.rates.map(r=>r.weight));return b.rates[weightedPick(w)].key;}
+function indexOfRarity(DB,key){return DB.rarities.findIndex(r=>r.key===key);}function nextRarityKey(DB,key){const i=indexOfRarity(DB,key);return(i>=0&&i<DB.rarities.length-1)?DB.rarities[i+1].key:null;}
+
+function simulatePulls(DB,bKey,count){
+  const b=DB.banners.find(x=>x.key===bKey)||DB.banners[0];
+  const themedTags=(b.tags&&b.tags.length)?b.tags.map(t=>t.toLowerCase()):null;
+  const results=[];
+  for(let i=0;i<count;i++){
+    const rKey=pickRarity(DB,b);
+    let pool=DB.characters.filter(c=>c.rarity===rKey);
+    if(themedTags){const f=pool.filter(c=>(c.tags||[]).some(t=>themedTags.includes((t||'').toLowerCase())));if(f.length)pool=f;}
+    const base=pool.length?pool[Math.floor(Math.random()*pool.length)]:DB.characters[Math.floor(Math.random()*DB.characters.length)];
+    results.push(addToInventory(DB,base));
+  }
+  if(count>=10&&b.pity){
+    const minKey=b.pity.tenGuaranteeKey;const minIndex=indexOfRarity(DB,minKey);
+    const ok=results.some(r=>indexOfRarity(DB,r.rarity)>=minIndex);
+    if(!ok){
+      const lowIdx=results.reduce((minI,r,i)=>indexOfRarity(DB,r.rarity)<indexOfRarity(DB,results[minI].rarity)?i:minI,0);
+      const pool=DB.characters.filter(c=>c.rarity===minKey);const base=pool[Math.floor(Math.random()*pool.length)]||DB.characters[0];
+      results[lowIdx]=addToInventory(DB,base);DB.history.unshift({ts:now(),type:'pity',info:`Upgraded to ${minKey}`});
+    }
+  }
+  return results;
+}
+function defaultDB(){
+  const rar=DEFAULT_RARITIES.slice();const chars=defaultCharacters(rar);
+  const DB={createdAt:now(),lastDaily:null,currency:{gems:4000,gold:20000},rarities:rar,characters:chars,inventory:[],history:[],
+    banners:[
+      {key:'standard',name:'Standard Banner',desc:'Base weights. No guarantees.',rates:rar.map(r=>({key:r.key,weight:r.weight})),pity:null,tags:[]},
+      {key:'premium',name:'Premium Banner',desc:'Top-heavier. 10x guarantee: Rare+.',rates:rar.map(r=>({key:r.key,weight:['t3_rare','t4_epic','t5_legendary','t6_mythic','t7_supreme','t8_arcane','t9_celestial','t10_ultimate','tx_godlike','ty_multiversal','tz_omnipotent'].includes(r.key)?r.weight*1.35:r.weight*0.8})),pity:{tenGuaranteeKey:'t3_rare'},tags:[]},
+      {key:'ascended',name:'Ascended Banner',desc:'Very top-heavy. 10x guarantee: Epic+.',rates:rar.map(r=>({key:r.key,weight:['t4_epic','t5_legendary','t6_mythic','t7_supreme','t8_arcane','t9_celestial','t10_ultimate','tx_godlike','ty_multiversal','tz_omnipotent'].includes(r.key)?r.weight*1.8:r.weight*0.6})),pity:{tenGuaranteeKey:'t4_epic'},tags:[]},
+      {key:'theme_mage',name:'Arcane Focus',desc:'Boosted odds for mage/arcane tags.',rates:rar.map(r=>({key:r.key,weight:(['t4_epic','t5_legendary','t6_mythic','t8_arcane'].includes(r.key)?r.weight*1.2:r.weight)})),pity:{tenGuaranteeKey:'t4_epic'},tags:['mage','arcane']},
+      {key:'theme_skyrim',name:'Skyrim Legends',desc:'Pulls characters tagged Skyrim.',rates:rar.map(r=>({key:r.key,weight:r.weight})),pity:{tenGuaranteeKey:'t3_rare'},tags:['Skyrim']}
+    ],
+    packs:[
+      {key:'std1',name:'Standard x1',cost:100,pulls:1,banner:'standard',guarantee:null},
+      {key:'std10',name:'Standard x10',cost:900,pulls:10,banner:'standard',guarantee:null},
+      {key:'pre1',name:'Premium x1',cost:250,pulls:1,banner:'premium',guarantee:null},
+      {key:'pre10',name:'Premium x10',cost:2200,pulls:10,banner:'premium',guarantee:'Rare+'},
+      {key:'asc10',name:'Ascended x10',cost:6000,pulls:10,banner:'ascended',guarantee:'Epic+'}
+    ],
+    themedPacks:[
+      {key:'tp_arcane',name:'Arcane Summon',cost:2500,tags:['mage','arcane'],banner:'premium'},
+      {key:'tp_skyrim',name:'Skyrim Legends',cost:1500,tags:['Skyrim'],banner:'standard'}
+    ],
+    version:7
+  };
+  simulatePulls(DB,'standard',10);simulatePulls(DB,'premium',12);simulatePulls(DB,'ascended',12);
+  return DB;
+}
+function loadDB(){
+  const d=localStorage.getItem(DB_KEY);
+  if(!d){const db=defaultDB();saveDB(db);return db;}
+  try{
+    const db=JSON.parse(d);
+    if(!db.rarities)db.rarities=DEFAULT_RARITIES.slice();
+    if(!db.characters)db.characters=defaultCharacters(db.rarities);
+    if(!db.banners)db.banners=defaultDB().banners;
+    if(!db.packs)db.packs=defaultDB().packs;
+    if(!db.themedPacks)db.themedPacks=defaultDB().themedPacks;
+    if(!db.currency)db.currency={gems:0,gold:0};
+    db.inventory.forEach(it=>{
+      if(!('world'in it))it.world='Unknown';
+      if(!('description'in it))it.description='A mysterious figure.';
+      if(!('level'in it))it.level=1;
+      if(!('exp'in it))it.exp=0;
+      if(!('ascension'in it))it.ascension=0;
+      if(!Array.isArray(it.tags))it.tags=it.world?[it.world]:[];
+    });
+    return db;
+  }catch(e){const db=defaultDB();saveDB(db);return db;}
+}
+function saveDB(db){localStorage.setItem(DB_KEY,JSON.stringify(db));updateCurrencyUI();renderCodexStats();}
+let DB=loadDB();
+
+function updateCurrencyUI(){$('#gemsInput').value=DB.currency.gems;$('#goldInput').value=DB.currency.gold;}
+function spendGems(n){if(DB.currency.gems<n){toast('Not enough gems!');return false;}DB.currency.gems-=n;saveDB(DB);return true;}
+function grantGems(n){DB.currency.gems+=n;saveDB(DB);toast(`+${n} 💎`);}function grantGold(n){DB.currency.gold+=n;saveDB(DB);toast(`+${n} 🪙`);}
+function canClaimDaily(){if(!DB.lastDaily)return true;const l=new Date(DB.lastDaily);return new Date().toDateString()!==l.toDateString();}
+function claimDaily(){if(!canClaimDaily()){toast('Daily already claimed today.');return;}DB.lastDaily=new Date().toISOString();DB.currency.gems+=250;DB.currency.gold+=1000;saveDB(DB);toast('Daily: +250 💎, +1000 🪙');}
+
+function expNeeded(l){return l>=100?0:(l*50+200);}
+function grantExpToChar(c,a){if(c.level>=100)return 0;c.exp+=a;let up=0;while(c.level<100&&c.exp>=expNeeded(c.level)){c.exp-=expNeeded(c.level);c.level++;up++;}return up;}
+function duplicatesAvailable(card){const key=card.baseId||card.name+'|'+card.rarity;let count=0;for(const c of DB.inventory){const k=c.baseId||(c.name+'|'+c.rarity);if(k===key&&c.id!==card.id)count++;}return count;}
+function consumeDuplicates(card,n){const key=card.baseId||card.name+'|'+card.rarity;let need=n;for(let i=DB.inventory.length-1;i>=0&&need>0;i--){const c=DB.inventory[i];const k=c.baseId||(c.name+'|'+c.rarity);if(k===key&&c.id!==card.id){DB.inventory.splice(i,1);need--;}}return need===0;}
+function nextRarityKeyFor(card){const i=indexOfRarity(DB,card.rarity);return(i>=0&&i<DB.rarities.length-1)?DB.rarities[i+1].key:null;}
+function ascendCard(c){if(c.level<100){toast('Reach level 100 first.');return false;}const d=duplicatesAvailable(c);if(d<3){toast('Need 3 duplicates to ascend.');return false;}const next=nextRarityKeyFor(c);if(!next){toast('Already at max rarity.');return false;}if(!consumeDuplicates(c,3)){toast('Ascension failed.');return false;}c.rarity=next;c.ascension=(c.ascension||0)+1;c.level=1;c.exp=0;for(const k of ['STR','DEX','CON','INT','WIS','CHA'])c.stats[k]=clamp(c.stats[k]+2,1,30);toast('Ascended!');return true;}
+
+function rarityByKey(k){return DB.rarities.find(r=>r.key===k)||DB.rarities[0];}
+function rarityLabel(k){const r=rarityByKey(k);return `${r.grade} • ${r.name}`;}
+function renderCard(card){const rar=rarityByKey(card.rarity);const needed=expNeeded(card.level);const pct=card.level>=100?100:Math.round((card.exp/needed)*100);const tags=(card.tags||[]).slice(0,2).map(t=>`<span class="chip small">${t}</span>`).join('');return `<div class="card" data-id="${card.id}" title="${rar.grade} • ${rar.name}">
+  <span class="badge" data-r="${card.rarity}" style="border-color:${rar.color}; color:#101325">${rar.grade} • ${rar.name}</span>
+  <button class="edit-btn" data-edit="${card.id}">✎ Edit</button>
+  <div class="art" data-open="${card.id}"><img alt="" src="${card.img}"></div>
+  <div style="padding:8px"><div class="row" style="align-items:center"><strong>${card.name}</strong><span class="small" style="margin-left:auto">Lv ${card.level||1}${card.ascension?' ✦'+card.ascension:''}</span></div>
+  <div class="small">${card.world||'Unknown'}</div><div class="bar" title="EXP"><i style="width:${pct||0}%"></i></div>
+  <div class="stats">${Object.entries(card.stats).map(([k,v])=>`<div class="stat">${k}<br>${v}</div>`).join('')}</div>
+  <div class="row small" style="margin-top:6px; gap:6px">${tags}</div></div></div>`;}
+function renderInventory(list,root){root.innerHTML=list.map(renderCard).join('')||`<div class="small">No characters yet. Pull from the Gacha!</div>`;}
+function renderRates(b){$('#rates').innerHTML=b.rates.map(rr=>{const r=rarityByKey(rr.key);return `<div class="row" style="align-items:center"><div style="min-width:200px"><span class="chip">${r.grade} • ${r.name}</span></div><div class="kv"><div>Weight</div><div>${(rr.weight).toFixed(6)}</div></div></div>`;}).join('');}
+function renderBanners(){const sel=$('#bannerSelect');sel.innerHTML=DB.banners.map(b=>`<option value="${b.key}">${b.name}</option>`).join('');const simSel=$('#simBanner');if(simSel)simSel.innerHTML=sel.innerHTML;onBannerChange();}
+function onBannerChange(){const key=$('#bannerSelect').value;const b=DB.banners.find(x=>x.key===key)||DB.banners[0];const tags=b.tags&&b.tags.length?`<div class="small">Theme tags: ${b.tags.join(', ')}</div>`:'';$('#bannerInfo').innerHTML=`<div>${b.desc}</div>${tags}`;renderRates(b);}
+function renderFilters(){const rf=$('#rarityFilter');rf.innerHTML=`<option value="">All rarities</option>`+DB.rarities.map(r=>`<option value="${r.key}">${r.grade} • ${r.name}</option>`).join('');const cr=$('#codexFilterRarity');if(cr)cr.innerHTML=rf.innerHTML;}
+function tokens(s){return(s||'').toLowerCase().split(/[\s,]+/).filter(Boolean);}
+function matchesTokens(c,t){if(!t.length)return true;const r=rarityByKey(c.rarity);const hay=[c.name?.toLowerCase()||'',c.world?.toLowerCase()||'',r.name.toLowerCase(),...(c.tags||[]).map(x=>x.toLowerCase())].join(' ');return t.every(x=>hay.includes(x));}
+function filteredAndSorted(list,q,r,tFilter,sort){const tagToks=tokens(tFilter||'');let arr=list.filter(c=>(!q||c.name.toLowerCase().includes(q.toLowerCase()))&&(!r||c.rarity===r)&&matchesTokens(c,tagToks));const rank=k=>indexOfRarity(DB,k);arr.sort((a,b)=>{if(sort==='name')return a.name.localeCompare(b.name);if(sort==='world')return(a.world||'').localeCompare(b.world||'');if(sort==='newest')return new Date(b.acquiredAt)-new Date(a.acquiredAt);return rank(b.rarity)-rank(a.rarity);});return arr;}
+function renderCharacterManager(){const list=filteredAndSorted(DB.inventory,$('#search').value,$('#rarityFilter').value,$('#tagsFilter').value,$('#charSort').value);renderInventory(list,$('#inventoryGrid'));}
+function renderCodex(){const list=filteredAndSorted(DB.inventory,$('#codexSearch').value,$('#codexFilterRarity').value,$('#codexFilterTags').value,$('#codexSort').value);$('#codexGrid').innerHTML=list.map(renderCard).join('')||`<div class="small">No entries match.</div>`;}
+function renderCodexStats(){if(!$('#codexStats'))return;const countsByR=DB.rarities.map(r=>{const c=DB.inventory.filter(x=>x.rarity===r.key).length;return `<div class="kv"><div>${r.grade} • ${r.name}</div><div>${c}</div></div>`;}).join('');const worldMap={};DB.inventory.forEach(c=>{const w=(c.world||'Unknown');worldMap[w]=(worldMap[w]||0)+1;});const worlds=Object.entries(worldMap).sort((a,b)=>b[1]-a[1]).map(([w,c])=>`<div class="kv"><div>${w}</div><div>${c}</div></div>`).join('');$('#codexStats').innerHTML=`<div class="kv"><div>Total Characters</div><div>${DB.inventory.length}</div></div><div class="kv"><div>Pool Size</div><div>${DB.characters.length}</div></div><div class="kv"><div>Gems</div><div>${DB.currency.gems}</div></div><div class="kv"><div>Gold</div><div>${DB.currency.gold}</div></div><div class="divider"></div><div style="font-weight:800; margin-bottom:4px">By Rarity</div>${countsByR||'<div class="small">No data.</div>'}<div class="divider"></div><div style="font-weight:800; margin-bottom:4px">By World</div>${worlds||'<div class="small">No data.</div>'}`;}
+function renderShop(){const root=$('#shopPacks');root.innerHTML=DB.packs.map(p=>{const b=DB.banners.find(x=>x.key===p.banner);const gua=p.guarantee?`<div class="small">Guarantee: ${p.guarantee}</div>`:'';return `<div class="row" style="align-items:center; border:1px solid #2a335f; background:#12183a; padding:10px; border-radius:10px; justify-content:space-between"><div><div class="row" style="gap:10px"><strong>${p.name}</strong><span class="muted">— ${b?b.name:'?'}</span></div><div class="row" style="gap:10px"><span class="pill">Cost: 💎 ${p.cost}</span>${gua}</div></div><button onclick="buyPack('${p.key}')">Buy</button></div>`;}).join('');const themed=$('#shopThemed');themed.innerHTML=DB.themedPacks.map(p=>`<div class="row" style="align-items:center; border:1px solid #264b5f; background:#0f1f2a; padding:10px; border-radius:10px; justify-content:space-between"><div><div class="row" style="gap:10px"><strong>${p.name}</strong><span class="muted">— tags: ${p.tags.join(', ')}</span></div><div class="row" style="gap:10px"><span class="pill">Cost: 💎 ${p.cost}</span><span class="small">+20% rarity weight on matching tags</span></div></div><button onclick="buyThemed('${p.key}')">Buy</button></div>`).join('');}
+
+function doMultiPull(bannerKey,n){const results=simulatePulls(DB,bannerKey,n);saveDB(DB);return results;}
+function buyPack(key){const p=DB.packs.find(x=>x.key===key);if(!p)return;if(!spendGems(p.cost))return;const results=doMultiPull(p.banner,p.pulls);$('#pullResults').innerHTML=results.map(renderCard).join('');toast(`Opened ${p.name}!`);switchTab('gacha');$('#bannerSelect').value=p.banner;onBannerChange();}
+function buyThemed(key){const p=DB.themedPacks.find(x=>x.key===key);if(!p)return;if(!spendGems(p.cost))return;const base=DB.banners.find(b=>b.key===p.banner)||DB.banners[0];const tmp={...base,key:'_temp_'+uid(),tags:p.tags.slice(),rates:base.rates.map(r=>({key:r.key,weight:r.weight*1.2})),pity:base.pity};DB.banners.push(tmp);const results=doMultiPull(tmp.key,10);DB.banners=DB.banners.filter(b=>b.key!==tmp.key);$('#pullResults').innerHTML=results.map(renderCard).join('');toast(`Opened ${p.name}!`);switchTab('gacha');$('#bannerSelect').value=base.key;onBannerChange();}
+
+let MODAL_ID=null;
+function openImageModal(id){const c=DB.inventory.find(x=>x.id===id);if(!c)return;const r=rarityByKey(c.rarity);MODAL_ID=c.id;$('#modalImg').src=c.img;$('#modalTitle').textContent=c.name;$('#modalRarity').textContent=`${r.grade} • ${r.name}`;$('#modalWorld').textContent=c.world||'Unknown';$('#modalAcquired').textContent=new Date(c.acquiredAt).toLocaleString();$('#modalLevel').textContent=c.level;$('#modalAscension').textContent=c.ascension||0;const needed=expNeeded(c.level);const pct=c.level>=100?100:Math.round((c.exp/needed)*100);$('#modalExpFill').style.width=(pct||0)+'%';$('#modalExpText').textContent=c.level>=100?'Max level':`${c.exp}/${needed} EXP`;$('#modalStats').innerHTML=Object.entries(c.stats).map(([k,v])=>`<div class="stat">${k}<br>${v}</div>`).join('');$('#modalDesc').textContent=c.description||'';$('#modalTags').innerHTML=(c.tags||[]).map(t=>`<span class="chip">${t}</span>`).join('')||'<span class="small muted">No tags</span>';$('#imageModal').classList.add('show');}
+function closeImageModal(){$('#imageModal').classList.remove('show');MODAL_ID=null;}
+document.addEventListener('click',e=>{if(e.target.id==='imageModal')closeImageModal();});
+$('#modalGainExp').addEventListener('click',()=>{if(!MODAL_ID)return;const c=DB.inventory.find(x=>x.id===MODAL_ID);if(!c)return;const gained=120;const ups=grantExpToChar(c,gained);saveDB(DB);renderCharacterManager();renderCodex();openImageModal(c.id);toast(ups?`Level up! (+${gained} EXP)`: `+${gained} EXP`);});
+$('#modalAscend').addEventListener('click',()=>{if(!MODAL_ID)return;const c=DB.inventory.find(x=>x.id===MODAL_ID);if(!c)return;if(ascendCard(c)){saveDB(DB);renderCharacterManager();renderCodex();openImageModal(c.id);}});
+
+let EDIT_ID=null,EDIT_TAGS=[];
+function openEditModal(cardId){const creating=!cardId;EDIT_ID=cardId||null;const c=creating?null:DB.inventory.find(x=>x.id===cardId);$('#editTitle').textContent=creating?'Add Character':`Edit: ${c.name}`;$('#ed_name').value=c?.name||'';$('#ed_rarity').innerHTML=DB.rarities.map(r=>`<option ${c&&c.rarity===r.key?'selected':''} value="${r.key}">${r.grade} • ${r.name}</option>`).join('');const stats=c?.stats||{STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10};for(const k of ['STR','DEX','CON','INT','WIS','CHA'])$('#ed_'+k).value=stats[k];$('#ed_world').value=c?.world||'';$('#ed_desc').value=c?.description||'';EDIT_TAGS=(c?.tags&&Array.isArray(c.tags))?[...c.tags]:(c?.world?[c.world]:[]);$('#ed_preview').classList.toggle('hidden',!(c?.img));if(c?.img)$('#ed_preview').src=c.img;$('#ed_img_url').value=c?.img&&c.img.startsWith('http')?c.img:'';delete $('#ed_preview').dataset.newsrc;renderTagBox();renderTagSuggestions('');$('#editModal').classList.add('show');}
+function closeEditModal(){$('#editModal').classList.remove('show');EDIT_ID=null;EDIT_TAGS=[];}
+$('#ed_cancel').addEventListener('click',closeEditModal);
+$('#ed_delete').addEventListener('click',()=>{if(!EDIT_ID){toast('No character selected.');return;}if(!confirm('Delete this character?'))return;const i=DB.inventory.findIndex(x=>x.id===EDIT_ID);if(i>=0){DB.inventory.splice(i,1);saveDB(DB);renderCharacterManager();renderCodex();toast('Deleted.');}closeEditModal();});
+$('#ed_img').addEventListener('change',async(e)=>{const f=e.target.files[0];if(!f)return;const data=await fileToDataURL(f);$('#ed_preview').classList.remove('hidden');$('#ed_preview').src=data;$('#ed_preview').dataset.newsrc=data;$('#ed_img_url').value='';});
+$('#ed_img_url').addEventListener('input',(e)=>{const url=e.target.value.trim();if(!url)return;$('#ed_preview').classList.remove('hidden');$('#ed_preview').src=url;delete $('#ed_preview').dataset.newsrc;});
+$('#ed_save').addEventListener('click',async()=>{const creating=!EDIT_ID;const name=$('#ed_name').value.trim()||'Unnamed';const rarity=$('#ed_rarity').value;const stats={};for(const k of ['STR','DEX','CON','INT','WIS','CHA'])stats[k]=clamp(parseInt($('#ed_'+k).value)||10,1,30);const world=$('#ed_world').value.trim()||'Unknown';let desc=$('#ed_desc').value.trim();if(!desc)desc=`An enigmatic ${rarityLabel(rarity)} from ${world}.`;let img=$('#ed_preview').dataset.newsrc||$('#ed_img_url').value.trim()||null;if(creating){const base={id:uid(),name,rarity,stats,world,description:desc,tags:[...new Set(EDIT_TAGS.concat(world?[world]:[]))],img:img||svgPlaceholder(name,rarityByKey(rarity).color),createdAt:now()};DB.characters.push(base);addToInventory(DB,base);}else{const c=DB.inventory.find(x=>x.id===EDIT_ID);if(!c)return toast('Card not found.');c.name=name;c.rarity=rarity;c.stats=stats;c.world=world;c.description=desc;c.tags=[...new Set(EDIT_TAGS.concat(world?[world]:[]))];if(img)c.img=img;}saveDB(DB);renderCharacterManager();renderCodex();closeEditModal();toast('Saved.');});
+
+function renderTagBox(){const root=$('#tagBox');root.innerHTML='';EDIT_TAGS.forEach((t,i)=>{const chip=document.createElement('span');chip.className='chip';chip.textContent=t;chip.title='Tap to remove';chip.addEventListener('click',()=>{EDIT_TAGS.splice(i,1);renderTagBox();renderTagSuggestions($('#tagInput')?.value||'');});root.appendChild(chip);});const inputChip=document.createElement('span');inputChip.className='chip';const inp=document.createElement('input');inp.id='tagInput';inp.placeholder='add tag…';inp.addEventListener('input',()=>renderTagSuggestions(inp.value));inp.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===','){e.preventDefault();const v=inp.value.trim().replace(/,$/,'');if(!v)return;if(!EDIT_TAGS.map(s=>s.toLowerCase()).includes(v.toLowerCase()))EDIT_TAGS.push(v);inp.value='';renderTagBox();renderTagSuggestions('');}else if(e.key==='Backspace'&&!inp.value&&EDIT_TAGS.length){EDIT_TAGS.pop();renderTagBox();renderTagSuggestions('');}});inputChip.appendChild(inp);root.appendChild(inputChip);}
+function getAllTags(){const set=new Set();DB.inventory.forEach(c=>{if(c.world)set.add(c.world);(c.tags||[]).forEach(t=>set.add(t));});return Array.from(set);}
+function renderTagSuggestions(f){const root=$('#tagSuggest');root.innerHTML='';const F=(f||'').toLowerCase();const exists=new Set(EDIT_TAGS.map(t=>t.toLowerCase()));const list=getAllTags().filter(t=>!exists.has(t.toLowerCase())&&(!F||t.toLowerCase().includes(F))).slice(0,18);if(!list.length){root.innerHTML='<span class="small muted">No suggestions</span>';return;}list.forEach(t=>{const chip=document.createElement('span');chip.className='chip suggestion';chip.textContent=t;chip.addEventListener('click',()=>{if(!exists.has(t.toLowerCase()))EDIT_TAGS.push(t);renderTagBox();renderTagSuggestions('');});root.appendChild(chip);});}
+
+function renderRarityEditor(){const root=$('#rarityEditor');root.innerHTML=DB.rarities.map(r=>`<div class="row" style="align-items:flex-end; margin-bottom:6px"><div><label>Key<input data-rk="${r.key}" data-f="key" value="${r.key}"></label></div><div><label>Grade<input data-rk="${r.key}" data-f="grade" value="${r.grade}"></label></div><div><label>Name<input data-rk="${r.key}" data-f="name" value="${r.name}"></label></div><div><label>Color<input data-rk="${r.key}" data-f="color" value="${r.color}" type="color"></label></div><div><label>Weight<input data-rk="${r.key}" data-f="weight" type="number" step="0.0001" value="${r.weight}"></label></div><div><label>Desc<input data-rk="${r.key}" data-f="desc" value="${r.desc||''}"></label></div></div>`).join('');}
+function saveRaritiesFromEditor(){const rows=$$('#rarityEditor [data-rk]');const byKey={};rows.forEach(el=>{const rk=el.getAttribute('data-rk');const f=el.getAttribute('data-f');byKey[rk]=byKey[rk]||{};byKey[rk][f]=(f==='weight'?parseFloat(el.value):el.value);});DB.rarities=Object.values(byKey);DB.banners.forEach(b=>{b.rates=DB.rarities.map(r=>{const ex=b.rates.find(x=>x.key===r.key);return{key:r.key,weight:ex?ex.weight:r.weight};});});saveDB(DB);renderAll();toast('Rarities saved.');}
+function addRarityRow(){DB.rarities.push({key:'new_'+uid().slice(0,4),grade:'?',name:'New',desc:'',color:'#8888ff',weight:.01});saveDB(DB);renderRarityEditor();}
+function renderBannerEditor(){const root=$('#bannerEditor');root.innerHTML=DB.banners.map(b=>`<div class="panel" style="background:#0f1636; border-color:#364689; margin-bottom:8px"><div class="row"><div><label>Key<input data-bk="${b.key}" data-f="key" value="${b.key}"></label></div><div><label>Name<input data-bk="${b.key}" data-f="name" value="${b.name}"></label></div><div><label>Description<input data-bk="${b.key}" data-f="desc" value="${b.desc||''}"></label></div><div><label>Theme tags<input data-bk="${b.key}" data-f="tags" value="${(b.tags||[]).join(', ')}" placeholder="comma separated"></label></div><div><label>Pity (10x min)<select data-bk="${b.key}" data-f="pity">${DB.rarities.map(r=>`<option ${b.pity&&b.pity.tenGuaranteeKey===r.key?'selected':''} value="${r.key}">${r.grade} • ${r.name}</option>`).join('')}</select></label></div></div><div class="divider"></div>${DB.rarities.map(r=>{const rr=b.rates.find(x=>x.key===r.key)||{key:r.key,weight:r.weight};return `<div class="row"><div style="min-width:200px"><span class="chip">${r.grade} • ${r.name}</span></div><div><label>Weight<input class="rateInput" data-bk="${b.key}" data-rk="${r.key}" type="number" step="0.0001" value="${rr.weight}"></label></div></div>`;}).join('')}</div>`).join('');}
+function saveBannersFromEditor(){const groups=new Map();$$('#bannerEditor [data-bk]').forEach(el=>{const bk=el.getAttribute('data-bk');const f=el.getAttribute('data-f');groups.set(bk,groups.get(bk)||{key:bk});if(f==='key')groups.get(bk).key=el.value;if(f==='name')groups.get(bk).name=el.value;if(f==='desc')groups.get(bk).desc=el.value;if(f==='tags')groups.get(bk).tags=el.value.split(',').map(s=>s.trim()).filter(Boolean);if(f==='pity')groups.get(bk).pity={tenGuaranteeKey:el.value};});const rateMap={};$$('#bannerEditor .rateInput').forEach(el=>{const bk=el.getAttribute('data-bk');const rk=el.getAttribute('data-rk');(rateMap[bk] ||= {})[rk]=parseFloat(el.value);});const banners=[];for(const [k,b] of groups.entries()){const rates=DB.rarities.map(r=>({key:r.key,weight:(rateMap[k]&&rateMap[k][r.key]!=null)?rateMap[k][r.key]:r.weight}));banners.push({key:b.key,name:b.name,desc:b.desc,rates,pity:b.pity,tags:b.tags||[]});}DB.banners=banners;saveDB(DB);renderAll();toast('Banners saved.');}
+function renderPackEditor(){const root=$('#packEditor');root.innerHTML=`<div class="small">Standard Packs</div>`+DB.packs.map(p=>`<div class="row" style="align-items:flex-end; margin-bottom:6px"><div><label>Key<input data-pk="${p.key}" data-f="key" value="${p.key}"></label></div><div><label>Name<input data-pk="${p.key}" data-f="name" value="${p.name}"></label></div><div><label>Cost<input data-pk="${p.key}" data-f="cost" type="number" value="${p.cost}"></label></div><div><label>Pulls<input data-pk="${p.key}" data-f="pulls" type="number" value="${p.pulls}"></label></div><div><label>Banner<select data-pk="${p.key}" data-f="banner">${DB.banners.map(b=>`<option ${p.banner===b.key?'selected':''} value="${b.key}">${b.name}</option>`).join('')}</select></label></div><div><label>Guarantee<input data-pk="${p.key}" data-f="guarantee" value="${p.guarantee||''}"></label></div></div>`).join('')+`<div class="divider"></div><div class="small">Themed Packs (by tags)</div>`+DB.themedPacks.map(p=>`<div class="row" style="align-items:flex-end; margin-bottom:6px"><div><label>Key<input data-tpk="${p.key}" data-f="key" value="${p.key}"></label></div><div><label>Name<input data-tpk="${p.key}" data-f="name" value="${p.name}"></label></div><div><label>Cost<input data-tpk="${p.key}" data-f="cost" type="number" value="${p.cost}"></label></div><div><label>Banner<select data-tpk="${p.key}" data-f="banner">${DB.banners.map(b=>`<option ${p.banner===b.key?'selected':''} value="${b.key}">${b.name}</option>`).join('')}</select></label></div><div><label>Tags<input data-tpk="${p.key}" data-f="tags" value="${p.tags.join(', ')}" placeholder="e.g., mage, arcane"></label></div></div>`).join('');}
+function savePacksFromEditor(){const map=new Map();$$('#packEditor [data-pk]').forEach(el=>{const pk=el.getAttribute('data-pk');const f=el.getAttribute('data-f');map.set(pk,map.get(pk)||{key:pk});let v=el.value;if(f==='cost'||f==='pulls')v=parseInt(v)||0;map.get(pk)[f]=v;});DB.packs=Array.from(map.values());const tmap=new Map();$$('#packEditor [data-tpk]').forEach(el=>{const pk=el.getAttribute('data-tpk');const f=el.getAttribute('data-f');tmap.set(pk,tmap.get(pk)||{key:pk,tags:[]});let v=el.value;if(f==='cost')v=parseInt(v)||0;if(f==='tags')v=v.split(',').map(s=>s.trim()).filter(Boolean);tmap.get(pk)[f]=v;});DB.themedPacks=Array.from(tmap.values());saveDB(DB);renderShop();toast('Packs saved.');}
+
+function setLayout(scopeEl,mode){scopeEl.classList.toggle('view-grid',mode==='grid');scopeEl.classList.toggle('view-list',mode==='list');scopeEl.classList.toggle('view-compact',mode==='compact');}
+function applyLayoutPrefs(){const cmode=loadPref('layout_characters','grid');const codexMode=loadPref('layout_codex','grid');setLayout($('#characters'),'grid');setLayout($('#codex'),'grid');setLayout($('#characters'),cmode);setLayout($('#codex'),codexMode);}
+function persistScale(){const v=$('#uiScale').value;document.documentElement.style.setProperty('--scale',v);savePref('uiScale',v);}
+
+function switchTab(key){$$('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===key));['gacha','characters','shop','tuning','codex'].forEach(id=>$('#'+id).classList.toggle('hidden',id!==key));applyLayoutPrefs();}
+function renderAll(){renderBanners();renderFilters();renderCharacterManager();renderShop();renderRarityEditor();renderBannerEditor();renderPackEditor();updateCurrencyUI();renderCodex();renderCodexStats();}
+function exportInventoryCSV(){const rows=[['id','name','rarityKey','rarityName','grade','level','exp','ascension','STR','DEX','CON','INT','WIS','CHA','world','tags','description','acquiredAt']];DB.inventory.forEach(c=>{const r=rarityByKey(c.rarity);rows.push([c.id,c.name,c.rarity,r.name,r.grade,c.level,c.exp,c.ascension,c.stats.STR,c.stats.DEX,c.stats.CON,c.stats.INT,c.stats.WIS,c.stats.CHA,c.world||'',(c.tags||[]).join('|'),(c.description||'').replace(/\n/g,' '),c.acquiredAt]);});const csv=rows.map(r=>r.map(x=>`"${(x??'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');download('characters.csv',csv);}
+
+function wire(){$$('.tab-btn').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.tab)switchTab(b.dataset.tab);}));$('#pullBtn').addEventListener('click',()=>{const k=$('#bannerSelect').value;const n=parseInt($('#pullCount').value);const results=doMultiPull(k,n);$('#pullResults').innerHTML=results.map(renderCard).join('');renderCharacterManager();renderCodex();toast(`Pulled ${n}.`);});$('#bannerSelect').addEventListener('change',onBannerChange);$('#search').addEventListener('input',renderCharacterManager);$('#rarityFilter').addEventListener('change',renderCharacterManager);$('#tagsFilter').addEventListener('input',renderCharacterManager);$('#charSort').addEventListener('change',renderCharacterManager);$('#clearFilter').addEventListener('click',()=>{$('#search').value='';$('#rarityFilter').value='';$('#tagsFilter').value='';renderCharacterManager();});$('#exportInv').addEventListener('click',exportInventoryCSV);$('#inventoryGrid').addEventListener('click',(e)=>{const edit=e.target.closest('.edit-btn');if(edit){e.stopPropagation();openEditModal(edit.getAttribute('data-edit'));return;}const opener=e.target.closest('.art');if(opener){const id=opener.getAttribute('data-open');openImageModal(id);return;}const card=e.target.closest('.card');if(!card)return;openImageModal(card.dataset.id);});$('#addCharacter').addEventListener('click',()=>openEditModal(null));$('#codexGrid').addEventListener('click',(e)=>{const opener=e.target.closest('.art');if(opener){openImageModal(opener.closest('.card').dataset.id);return;}const card=e.target.closest('.card');if(!card)return;openImageModal(card.dataset.id);});$('#codexSearch').addEventListener('input',renderCodex);$('#codexFilterRarity').addEventListener('change',renderCodex);$('#codexFilterTags').addEventListener('input',renderCodex);$('#codexSort').addEventListener('change',renderCodex);$('#codexClear').addEventListener('click',()=>{$('#codexSearch').value='';$('#codexFilterRarity').value='';$('#codexFilterTags').value='';renderCodex();});const initScale=loadPref('uiScale','1');$('#uiScale').value=initScale;document.documentElement.style.setProperty('--scale',initScale);$('#uiScale').addEventListener('input',persistScale,{passive:true});$('#layoutGrid').addEventListener('click',()=>{savePref('layout_characters','grid');applyLayoutPrefs();});$('#layoutList').addEventListener('click',()=>{savePref('layout_characters','list');applyLayoutPrefs();});$('#layoutCompact').addEventListener('click',()=>{savePref('layout_characters','compact');applyLayoutPrefs();});$('#codexGridBtn').addEventListener('click',()=>{savePref('layout_codex','grid');applyLayoutPrefs();});$('#codexListBtn').addEventListener('click',()=>{savePref('layout_codex','list');applyLayoutPrefs();});$('#codexCompactBtn').addEventListener('click',()=>{savePref('layout_codex','compact');applyLayoutPrefs();});$('#gemsApply').addEventListener('click',()=>{DB.currency.gems=parseInt($('#gemsInput').value)||0;saveDB(DB);toast('Gems updated.');});$('#goldApply').addEventListener('click',()=>{DB.currency.gold=parseInt($('#goldInput').value)||0;saveDB(DB);toast('Gold updated.');});$('#dailyBtn').addEventListener('click',claimDaily);}
+function initialRender(){renderBanners();renderFilters();renderCharacterManager();renderShop();renderRarityEditor();renderBannerEditor();renderPackEditor();updateCurrencyUI();renderCodex();renderCodexStats();applyLayoutPrefs();}
+wire();initialRender();
+</script>
+</body>
+</html>
