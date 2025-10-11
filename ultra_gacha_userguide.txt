@@ -1,0 +1,103 @@
+Ultra Gacha — Complete User Guide (v7)
+
+━━━━━━━━━━━━━━━
+1️⃣  Getting Started
+━━━━━━━━━━━━━━━
+- Open ultra_gacha_v7.html in any modern browser (Chrome, Edge, Firefox).
+- The game automatically saves to your browser’s localStorage — no backend required.
+- Use the top navigation tabs to switch between:
+  🌀 Gacha | 🧍 Character Manager | 💰 Shop | ⚙️ Tuning | 📚 Codex
+
+━━━━━━━━━━━━━━━
+2️⃣  Currency and UI Controls
+━━━━━━━━━━━━━━━
+- 💎 Gems and 🪙 Gold values appear in the top bar.
+- Type new values and press “Set” to modify manually.
+- Use “Daily” to collect daily bonus (+250 gems, +1000 gold).
+- Adjust UI size with the “UI Scale” slider (persists between sessions).
+
+━━━━━━━━━━━━━━━
+3️⃣  Gacha System
+━━━━━━━━━━━━━━━
+- Choose a banner from the dropdown and click “Pull.”
+- Options: 1x / 10x / 50x pulls.
+- Pull results appear as cards — click any image to open character details.
+- Banner info panel shows drop rates per rarity.
+- Themed banners filter by tags (e.g., “mage,” “Skyrim”).
+
+━━━━━━━━━━━━━━━
+4️⃣  Shop
+━━━━━━━━━━━━━━━
+- Buy packs with gems:
+  - Standard, Premium, Ascended → regular banners.
+  - Themed packs (new in v7) → filtered by tags with +20% rarity boost.
+- Buying packs immediately shows pull results.
+
+━━━━━━━━━━━━━━━
+5️⃣  Character Manager
+━━━━━━━━━━━━━━━
+- Shows all owned characters.
+- Use search or filters (rarity, tag, sort order).
+- Layout switcher: Grid / List / Compact (persists in settings).
+- Tap the ✎ Edit button on any card to open edit modal.
+- “Add Character” button creates new entries manually.
+
+━━━━━━━━━━━━━━━
+6️⃣  Editing Characters
+━━━━━━━━━━━━━━━
+Inside the Edit Modal:
+- Change Name, Rarity, Stats (STR/DEX/CON/INT/WIS/CHA).
+- Edit World, Tags, and Description (flavor text).
+- Upload new image (local file) or paste an Image URL.
+- Add/remove tag “chips” — suggestions appear from existing tags.
+- Save → updates immediately and persists in database.
+- Delete → removes the character permanently.
+
+━━━━━━━━━━━━━━━
+7️⃣  Leveling & Ascension
+━━━━━━━━━━━━━━━
+- Open any character (click its image or card) to view details.
+- “Gain EXP” adds 120 EXP per click.
+- Level up automatically when reaching EXP thresholds.
+- Max Level = 100.
+- Ascend available if:
+  1. Character is Lv 100.
+  2. You own 3 duplicates of that same character.
+- Ascension resets level to 1, promotes rarity to next tier, and boosts stats.
+
+━━━━━━━━━━━━━━━
+8️⃣  Codex
+━━━━━━━━━━━━━━━
+- Acts as your world database — searchable by name, rarity, or tags.
+- Shows total stats by rarity and world.
+- Same layout modes as Character Manager (Grid / List / Compact).
+- Click images to view details and lore.
+
+━━━━━━━━━━━━━━━
+9️⃣  Tuning (Advanced Editing)
+━━━━━━━━━━━━━━━
+- Rarities: edit name, color, grade, weight, and description.
+- Banners: customize name, description, pity guarantee, and weights.
+- Packs: edit cost, pull count, and linked banner.
+- Themed Packs: define tags and banner type.
+
+━━━━━━━━━━━━━━━
+🔟  Saving, Loading & Exporting
+━━━━━━━━━━━━━━━
+- Game auto-saves all changes in your browser.
+- To back up manually:
+  - Click “Export CSV” in Character Manager → saves all owned characters.
+  - Use your browser’s dev tools → Application → LocalStorage → copy `ultra_gacha_v7`.
+- Data remains saved even after browser restart (same device).
+
+━━━━━━━━━━━━━━━
+💡  Tips & Tricks
+━━━━━━━━━━━━━━━
+- Try the “Simulate Pulls” option in Tuning to auto-fill sample data.
+- Duplicate characters are required for Ascension.
+- Keep tags organized — they control Themed Pack pulls.
+- You can use image URLs from any CDN or image host (e.g., Imgur).
+- For development or modding, open the HTML in a text editor — all code is readable and self-contained.
+
+━━━━━━━━━━━━━━━
+End of Guide
